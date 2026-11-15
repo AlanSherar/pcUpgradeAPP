@@ -105,5 +105,69 @@ const falsePositive = isCloudflareChallenge(html);
 console.log(`  ${falsePositive ? "FAIL" : "OK  "} el sample de ${cfg.label} NO es un desafío`);
 if (falsePositive) failures.push(`falso positivo de Cloudflare en el sample de ${cfg.label}`);
 
+// 3) Aserciones por campo sobre cada StoreItem (src/lib/stores/types.ts). Sin red: solo
+// inspecciona lo que devolvió el parser. Nombre, precio en ARS como número, stock y URL.
+const PRICE_KINDS = new Set(["cash", "special", "list", "installments", "unspecified"]);
+const MAX_ARS = 100_000_000;
+const storeHost = new URL(cfg.urlPrefix).hostname;
+
+function checkItem(it) {
+  const errs = [];
+  const t = it?.title;
+  if (typeof t !== "string" || t.trim().length < 3) errs.push(`nombre vacío o muy corto: ${JSON.stringify(t)}`);
+  else if (/[<>]/.test(t) || t !== t.trim() || /\s{2,}/.test(t)) errs.push(`nombre con HTML o espacios sobrantes: ${JSON.stringify(t)}`);
+
+  const p = it?.priceArs;
+  if (typeof p !== "number" || !Number.isFinite(p)) errs.push(`precio ARS no es número: ${JSON.stringify(p)}`);
+  else if (p < 100 || p > MAX_ARS) errs.push(`precio ARS fuera de rango: ${p}`);
+  if (it?.listPriceArs !== undefined) {
+    const lp = it.listPriceArs;
+    if (typeof lp !== "number" || !Number.isFinite(lp)) errs.push(`precio de lista no es número: ${JSON.stringify(lp)}`);
+    else if (typeof p === "number" && lp < p) errs.push(`precio de lista ${lp} menor que el final ${p}`);
+  }
+  if (!PRICE_KINDS.has(it?.priceKind)) errs.push(`priceKind inválido: ${JSON.stringify(it?.priceKind)}`);
+
+  if (it?.inStock !== undefined && typeof it.inStock !== "boolean") errs.push(`stock no es booleano: ${JSON.stringify(it.inStock)}`);
+
+  let u = null;
+  try {
+    u = new URL(it?.url);
+  } catch {
+    errs.push(`URL no parseable: ${JSON.stringify(it?.url)}`);
+  }
+  if (u) {
+    if (u.protocol !== "https:") errs.push(`URL sin https: ${it.url}`);
+    if (u.hostname !== storeHost) errs.push(`URL de otro dominio (${u.hostname} != ${storeHost}): ${it.url}`);
+    if (/\s/.test(it.url)) errs.push(`URL con espacios: ${JSON.stringify(it.url)}`);
+  }
+  return errs;
+}
+
+// Autoprueba del validador: un ítem válido y un defecto por campo; cada caso malo debe dar 1 error.
+const goodItem = { title: "Placa de Video RTX 3060 12GB", priceArs: 849990, listPriceArs: 934989, priceKind: "cash", url: `${cfg.urlPrefix}x-123.html`, inStock: true };
+const badCases = {
+  nombre: { ...goodItem, title: "" },
+  precio: { ...goodItem, priceArs: "849.990" },
+  stock: { ...goodItem, inStock: "si" },
+  url: { ...goodItem, url: "https://otra-tienda.com.ar/x" },
+};
+let selfOk = checkItem(goodItem).length === 0;
+if (!selfOk) failures.push(`autoprueba: rechazó un ítem válido (${checkItem(goodItem).join("; ")})`);
+for (const [field, bad] of Object.entries(badCases)) {
+  const n = checkItem(bad).length;
+  if (n !== 1) {
+    selfOk = false;
+    failures.push(`autoprueba: defecto de ${field} dio ${n} error(es), se esperaba 1`);
+  }
+}
+
+console.log("\nAserciones por campo:");
+console.log(`  ${selfOk ? "OK  " : "FAIL"} autoprueba del validador (1 válido + ${Object.keys(badCases).length} defectos)`);
+items.forEach((it, i) => {
+  const errs = checkItem(it);
+  console.log(`  ${errs.length ? "FAIL" : "OK  "} ítem ${i + 1}`);
+  for (const e of errs) failures.push(`ítem ${i + 1}: ${e}`);
+});
+
 console.log(failures.length ? `\nFALLÓ:\n- ${failures.join("\n- ")}` : "\nTODO OK");
 process.exit(failures.length ? 1 : 0);
