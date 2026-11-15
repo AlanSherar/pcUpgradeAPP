@@ -1,0 +1,301 @@
+/*
+ * Estilos de /login, /setup y la barra de sesión del layout (T-008).
+ * Fuente: docs/specs/T-008_login_spec.md §1.6 y §1.7 (SERAPHINE).
+ * Tokens: fondo #f7f7f7 · superficie #ffffff · texto #222222 · secundario #555555
+ *   borde decorativo #dddddd · borde de input #767676 · error #b00020 · foco/links #1a56db
+ * Contraste WCAG: #222222/#fff 15.9:1 · #555555/#fff 7.5:1 · #b00020/#fff 7.3:1
+ *   #1a56db/#fff 6.2:1 · #767676/#fff 4.5:1 (controles piden 3:1)
+ * Inputs nunca < 16 px (evita el zoom de iOS). Controles 48 px; el resto ≥ 44 px.
+ */
+
+.page {
+  box-sizing: border-box;
+  min-height: 100vh;
+  min-height: 100dvh;
+  display: flex;
+  justify-content: center;
+  align-items: flex-start; /* arriba en todos los anchos: el teclado virtual no tapa el form */
+  padding: 24px 16px;
+}
+
+.card {
+  box-sizing: border-box;
+  width: 100%;
+  max-width: 400px;
+  background: #ffffff;
+  border: 1px solid #dddddd;
+  border-radius: 8px;
+  padding: 20px;
+  overflow-wrap: anywhere;
+}
+
+.eyebrow {
+  margin: 0 0 4px;
+  font-size: 14px;
+  line-height: 1.4;
+  color: #555555;
+}
+
+.title {
+  margin: 0 0 4px;
+  font-size: 24px;
+  line-height: 1.25;
+  color: #222222;
+}
+
+.subtitle {
+  margin: 0 0 24px;
+  font-size: 16px;
+  line-height: 1.4;
+  color: #555555;
+}
+
+.form {
+  display: flex;
+  flex-direction: column;
+  gap: 16px;
+}
+
+.field {
+  display: flex;
+  flex-direction: column;
+  gap: 8px;
+}
+
+.label {
+  font-size: 16px;
+  font-weight: bold;
+  color: #222222;
+}
+
+.hint {
+  margin: 0;
+  font-size: 14px;
+  line-height: 1.4;
+  color: #555555;
+}
+
+.input {
+  box-sizing: border-box;
+  width: 100%;
+  min-width: 0;
+  min-height: 48px;
+  padding: 12px;
+  font-family: inherit;
+  font-size: 16px;
+  color: #222222;
+  background: #ffffff;
+  border: 1px solid #767676;
+  border-radius: 6px;
+}
+
+.input[aria-invalid="true"] {
+  border-color: #b00020;
+  border-width: 2px;
+  padding: 11px;
+}
+
+.passwordRow {
+  display: flex;
+  gap: 8px;
+}
+
+.passwordRow .input {
+  flex: 1 1 auto;
+}
+
+.toggle {
+  flex: 0 0 auto;
+  min-width: 44px;
+  min-height: 48px;
+  padding: 0 12px;
+  font-family: inherit;
+  font-size: 16px;
+  color: #222222;
+  background: #ffffff;
+  border: 1px solid #767676;
+  border-radius: 6px;
+  cursor: pointer;
+}
+
+.fieldError {
+  margin: 0;
+  font-size: 14px;
+  line-height: 1.4;
+  color: #b00020;
+}
+
+.primary,
+.linkButton {
+  box-sizing: border-box;
+  width: 100%;
+  min-height: 48px;
+  padding: 12px 16px;
+  font-family: inherit;
+  font-size: 16px;
+  font-weight: bold;
+  color: #ffffff;
+  background: #222222;
+  border: 1px solid #222222;
+  border-radius: 6px;
+  cursor: pointer;
+}
+
+.linkButton {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  text-align: center;
+  text-decoration: none;
+}
+
+.primary:disabled {
+  background: #555555;
+  border-color: #555555;
+  cursor: progress;
+}
+
+.alert,
+.notice {
+  margin: 0 0 16px;
+  padding: 12px;
+  font-size: 16px;
+  line-height: 1.4;
+  color: #222222;
+  border-radius: 8px;
+}
+
+.alert {
+  background: #ffffff;
+  border: 1px solid #dddddd;
+  border-left: 4px solid #b00020;
+}
+
+.notice {
+  background: #f7f7f7;
+  border: 1px solid #dddddd;
+}
+
+.alert p,
+.notice p {
+  margin: 0;
+}
+
+.noticeTitle {
+  font-weight: bold;
+}
+
+.link {
+  display: inline-flex;
+  align-items: center;
+  min-height: 44px;
+  color: #1a56db;
+  text-decoration: underline;
+}
+
+.input:focus-visible,
+.toggle:focus-visible,
+.primary:focus-visible,
+.linkButton:focus-visible,
+.link:focus-visible,
+.alert:focus-visible,
+.brand:focus-visible,
+.signOutButton:focus-visible {
+  outline: 3px solid #1a56db;
+  outline-offset: 2px;
+}
+
+/* Barra de sesión del layout */
+.sessionBar {
+  box-sizing: border-box;
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  gap: 12px;
+  min-height: 56px;
+  padding: 0 16px;
+  background: #ffffff;
+  border-bottom: 1px solid #dddddd;
+}
+
+.brand {
+  display: inline-flex;
+  align-items: center;
+  min-height: 44px;
+  font-size: 16px;
+  font-weight: bold;
+  color: #222222;
+  text-decoration: none;
+}
+
+.sessionRight {
+  display: flex;
+  align-items: center;
+  gap: 12px;
+  min-width: 0;
+}
+
+/* Bajo 480 px el email se oculta; arriba entra entero (nunca "…"). */
+.sessionEmail {
+  display: none;
+  min-width: 0;
+  overflow-wrap: anywhere;
+  font-size: 14px;
+  color: #555555;
+}
+
+.signOutForm {
+  margin: 0;
+  flex: 0 0 auto;
+}
+
+.signOutButton {
+  min-width: 44px;
+  min-height: 44px;
+  padding: 0 14px;
+  font-family: inherit;
+  font-size: 16px;
+  color: #222222;
+  background: #ffffff;
+  border: 1px solid #767676;
+  border-radius: 6px;
+  cursor: pointer;
+}
+
+@media (min-width: 480px) {
+  .sessionEmail {
+    display: inline;
+  }
+}
+
+@media (min-width: 768px) {
+  .page {
+    padding: 64px 24px;
+  }
+
+  .card {
+    padding: 32px;
+  }
+
+  .title {
+    font-size: 28px;
+  }
+
+  .form {
+    gap: 20px;
+  }
+
+  .sessionBar {
+    padding: 0 24px;
+  }
+}
+
+@media (min-width: 1280px) {
+  .page {
+    padding-top: 96px;
+  }
+
+  .sessionBar {
+    padding: 0 32px;
+  }
+}
