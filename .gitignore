@@ -1,0 +1,25 @@
+# dependencias
+/node_modules
+
+# next.js
+/.next/
+/out/
+next-env.d.ts
+*.tsbuildinfo
+
+# build
+/build
+
+# secretos: nunca versionar
+.env
+.env.*
+!.env.example
+
+# logs / sistema
+npm-debug.log*
+.DS_Store
+*.pem
+
+# vercel / supabase local
+.vercel
+/supabase/.temp
